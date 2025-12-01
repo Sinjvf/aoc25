@@ -1,50 +1,45 @@
 package com.example.solutions
 
 import com.example.ILogger
-import kotlin.math.abs
 
 class DaySolution1(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private var l1 = mutableListOf<Int>()
-        private var l2 = mutableListOf<Int>()
+        private var position = 50
 
         override fun handleLine(inputStr: String, pos: Int) {
-            if (inputStr.isEmpty()) return
-            val l3 = inputStr.split(" ").filter { it.isNotEmpty() }
+            val sign = if (inputStr[0] == 'R') 1 else -1
+            val count = inputStr.substring(1..inputStr.length - 1).toInt()
 
-            l1.add(l3[0].toInt())
-            l2.add(l3[1].toInt())
+            position += sign * count
+            if (position < 0) position += 100
+            position %= 100
+     //       logger.logD("move $sign by $count new pos = $position")
+            if (position == 0) intRes++
         }
 
-        override fun obtainResult(): String {
-            val l1S = l1.sorted()
-            val l2S = l2.sorted()
-            l1S.forEachIndexed { id, it ->
-                intRes += abs(it - l2S[id])
-            }
-            return intRes.toString()
-        }
+        override fun obtainResult(): String = intRes.toString()
     }
     override val part2 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private var l1 = mutableListOf<Int>()
-        private var l2 = mutableListOf<Int>()
+        private var position = 50
 
         override fun handleLine(inputStr: String, pos: Int) {
-            if (inputStr.isEmpty()) return
-            val l3 = inputStr.split(" ").filter { it.isNotEmpty() }
+            val sign = if (inputStr[0] == 'R') 1 else -1
+            val count = inputStr.substring(1..inputStr.length - 1).toInt()
 
-            l1.add(l3[0].toInt())
-            l2.add(l3[1].toInt())
+            for (i in 1..count){
+                position+=sign
+                if (position==100 || position==0) {
+                    position = 0
+                    intRes++
+                }
+                if (position==-1) position = 99
+            }
         }
 
         override fun finish() {
-            l1.forEach { l1Elem ->
-                val l2Size = l2.filter { l1Elem == it }.size
-                intRes += l1Elem * l2Size
-            }
         }
 
         override fun obtainResult(): String = intRes.toString()

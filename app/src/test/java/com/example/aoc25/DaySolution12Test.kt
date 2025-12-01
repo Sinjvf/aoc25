@@ -7,28 +7,36 @@ import org.junit.Test
 class DaySolution12Test {
     private val solution = DaySolution1(TestLogger())
 
+
     @Test
-    fun testPart1() = runTest {
+    fun testPart1test() {
         //test case
         test_input12_1.forEachIndexed { id, str -> solution.part1.handleLine(str, id) }
         solution.part1.finish()
         assertEquals(result1, solution.part1.obtainResult())
+    }
 
+    @Test
+    fun testPart1() {
         // check
         input12_1.forEachIndexed { id, str -> solution.part1.handleLine(str, id) }
         solution.part1.finish()
         assertEquals(null, solution.part1.obtainResult())
     }
 
+
     @Test
-    fun testPart2() = runTest {
+    fun testPart2test() {
         //test case
         test_input12_2.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
         solution.part2.finish()
         assertEquals(result2, solution.part2.obtainResult())
+    }
 
+    @Test
+    fun testPart2() {
         // check
-        input12_1.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
+        input12_2.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
         solution.part2.finish()
         assertEquals(null, solution.part2.obtainResult())
     }
