@@ -1,12 +1,13 @@
 package com.example.aoc25
 
+import DaySolution3
 import com.example.solutions.DaySolution1
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DaySolution3Test {
-    private val solution = DaySolution1(TestLogger())
+    private val solution = DaySolution3(TestLogger())
 
 
     @Test
