@@ -44,9 +44,12 @@ class DaySolution3Test {
     }
 
     private val test_input3_1 =
-        """""".trimIndent().split("\n")
-    private val result1 = "11"
+        """987654321111111
+811111111111119
+234234234234278
+818181911112111""".trimIndent().split("\n")
+    private val result1 = "357"
 
     private val test_input3_2 = test_input3_1
-    private val result2 = "31"
+    private val result2 = "3121910778619"
 }
