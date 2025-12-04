@@ -44,9 +44,18 @@ class DaySolution4Test {
     }
 
     private val test_input4_1 =
-        """""".trimIndent().split("\n")
-    private val result1 = "11"
+        """..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@.""".trimIndent().split("\n")
+    private val result1 = "13"
 
     private val test_input4_2 = test_input4_1
-    private val result2 = "31"
+    private val result2 = "43"
 }

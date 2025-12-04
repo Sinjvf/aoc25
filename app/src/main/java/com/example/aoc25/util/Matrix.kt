@@ -190,6 +190,33 @@ class Matrix<T>() : Iterable<PositionData<T>> {
             }
         }
     }
+
+    fun getNei(pos: Point2D):List<Point2D> = buildList {
+        if (pos.y>0) {
+            if (pos.x>0){
+                add(Point2D(pos.x-1, pos.y-1))
+            }
+            add(Point2D(pos.x, pos.y-1))
+            if (pos.x<xSize-1){
+                add(Point2D(pos.x+1, pos.y-1))
+            }
+        }
+        if (pos.x>0){
+            add(Point2D(pos.x-1, pos.y))
+        }
+        if (pos.x<xSize-1){
+            add(Point2D(pos.x+1, pos.y))
+        }
+        if (pos.y<ySize-1) {
+            if (pos.x>0){
+                add(Point2D(pos.x-1, pos.y+1))
+            }
+            add(Point2D(pos.x, pos.y+1))
+            if (pos.x<xSize-1){
+                add(Point2D(pos.x+1, pos.y+1))
+            }
+        }
+    }
 }
 
 
