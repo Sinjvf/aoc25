@@ -42,9 +42,21 @@ class DaySolution5Test {
     }
 
     private val test_input5_1 =
-        """""".trimIndent().split("\n")
-    private val result1 = "11"
+        """3-5
+10-14
+16-20
+12-18
+12-18
+16-20
+
+1
+5
+8
+11
+17
+32""".trimIndent().split("\n")
+    private val result1 = "3"
 
     private val test_input5_2 = test_input5_1
-    private val result2 = "31"
+    private val result2 = "14"
 }
