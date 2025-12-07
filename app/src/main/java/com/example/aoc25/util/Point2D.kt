@@ -30,6 +30,10 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
         }
 
     val allDirection = listOf(UP, DOWN, LEFT, RIGHT)
+
+    /**
+     * возвращает соседей точки по основным направлениям (т.е. как ладья)
+     * */
     fun getNei(matrix: Matrix<*>) =
         allDirection.map { this.toDirection(it) }.filter { it.inMatrix(matrix) }
 
@@ -57,7 +61,8 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
         }
     }
     fun <T> inMatrix(matrix: Matrix<T>): Boolean = matrix.pointInRange(this)
-
+    fun <T> inMatrixVal(matrix: Matrix<T>, value: T): Boolean = matrix.pointInRange(this)
+            && matrix.get(this) == value
 
     fun inRange(xR: IntRange, yR: IntRange) =
         x in xR && y in yR

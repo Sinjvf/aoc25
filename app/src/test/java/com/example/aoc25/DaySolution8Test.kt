@@ -26,7 +26,6 @@ class DaySolution8Test {
         assertEquals(null, solution.part1.obtainResult())
     }
 
-
     @Test
     fun testPart2test() {
         //test case

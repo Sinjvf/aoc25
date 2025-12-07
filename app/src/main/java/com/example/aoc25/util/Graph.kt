@@ -84,6 +84,7 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
     heuristic: (NodesWithData<Node, Data>)  -> Data? = { null },
     isFFFinish: (NodesWithData<Node, Data>, Map<Node, Pair<Node, Data>>, PriorityQueue<NodesWithData<Node, Data>>) -> Boolean = { _, _, _ -> false },
     clear: (Node) -> Unit = {},
+    // переопределение получения списка next. Хз, зачем
     nextF: ((data: NodesWithData<Node, Data>) -> List<NodesWithData<Node, Data>>)? = null
 ): SearchResult<Node, Data> {
     val queue = PriorityQueue(compareBy<NodesWithData<Node, Data>> { it.data.getLong() })
@@ -254,7 +255,7 @@ open class NodesWithData<Node, Data : GraphData>(
 fun <Node, Data : GraphData> Graph<Node, Data>.allPath(
     startNode: Node,
     startData: Data,
-    endNode: Node
+    isEndNode: (Node)->Boolean
 ): List<Node > {
     val paths = mutableListOf<List<Node>>()
     val queue = PriorityQueue(compareBy<NodesWithDataAndPath<Node, Data>> { it.data.getLong() })
@@ -263,7 +264,7 @@ fun <Node, Data : GraphData> Graph<Node, Data>.allPath(
 
     while (true) {
         val nodesData = queue.poll() ?: return result
-        if (nodesData.node==endNode){
+        if (isEndNode(nodesData.node)){
             result.add(startNode)
         }
 
@@ -285,5 +286,33 @@ class NodesWithDataAndPath<Node, Data : GraphData>(
         return /*"prev = $prev,*/ "node = $node, data = $data"
     }
 }
+
+class LongGraphData(val i: Long) : GraphData {
+    override fun plus(a: GraphData): GraphData {
+        if (a !is LongGraphData) throw IllegalArgumentException("expext IntGraphData class")
+        return LongGraphData(i + a.i)
+    }
+
+    override fun getLong(): Long = i
+
+    override fun toString(): String {
+        return i.toString()
+    }
+}
+
+class StringGraphData(val i: String) : GraphData {
+    override fun plus(a: GraphData): GraphData {
+        if (a !is StringGraphData) throw IllegalArgumentException("expext IntGraphData class")
+
+        return StringGraphData("$i${a.i}")
+    }
+
+    override fun getLong(): Long = i.length.toLong()
+
+    override fun toString(): String {
+        return i
+    }
+}
+
 
 

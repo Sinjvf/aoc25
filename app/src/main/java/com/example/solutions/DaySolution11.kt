@@ -4,10 +4,14 @@ import com.example.ILogger
 class DaySolution11(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
-        private var intRes: Int = 0
+        private var intRes: Long = 0
 
 
         override fun handleLine(inputStr: String, pos: Int) {
+
+        }
+
+        override fun finish() {
 
         }
 
@@ -16,9 +20,15 @@ class DaySolution11(private val logger: ILogger) : DaySolution {
 
 
     override val part2 = object : DaySolutionPart {
-        private var intRes: Int = 0
+        private var intRes: Long = 0
+
 
         override fun handleLine(inputStr: String, pos: Int) {
+
+        }
+
+        override fun finish() {
+
         }
 
         override fun obtainResult(): String = intRes.toString()

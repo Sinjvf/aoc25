@@ -12,3 +12,7 @@ class Area(val x: LongRange, val y: LongRange) {
 
 fun Point2D.inside(a: Area) =
     x in a.x && y in a.y
+
+fun Point2D.inside(a: List<Area>){
+    a.any { this.inside(it) }
+}
