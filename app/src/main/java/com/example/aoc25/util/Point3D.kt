@@ -1,5 +1,8 @@
 package com.example.aoc25.util
 
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 /**
  *
  *
@@ -35,3 +38,5 @@ fun Point3D.moveTo(dir: Direction, count: Int): Point3D =
         Direction.RIGHT -> Point3D(x + count, y, z)
     }
 
+fun Point3D.distanceTo(p: Point3D): Double =
+    sqrt((p.x - x).pow(2) + (p.y - y).pow(2) + (p.z - z).pow(2))

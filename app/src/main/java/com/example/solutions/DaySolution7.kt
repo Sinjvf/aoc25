@@ -4,7 +4,7 @@ import com.example.ILogger
 import com.example.aoc25.util.BFSTreeNode
 import com.example.aoc25.util.Matrix
 import com.example.aoc25.util.Point2D
-import com.example.aoc25.util.bfsVisitTree
+import com.example.aoc25.util.bfsCountVisitTree
 
 class DaySolution7(private val logger: ILogger) : DaySolution {
 
@@ -24,7 +24,7 @@ class DaySolution7(private val logger: ILogger) : DaySolution {
         }
 
         override fun finish() {
-            bfsVisitTree(
+            bfsCountVisitTree(
                 initNode = BFSTreeNode(initPos, 1L),
                 getNext = { node -> getNext(node, matrix) },
                 onVisit = { node ->
@@ -54,7 +54,7 @@ class DaySolution7(private val logger: ILogger) : DaySolution {
         }
 
         override fun finish() {
-            val visited = bfsVisitTree(
+            val visited = bfsCountVisitTree(
                 initNode = BFSTreeNode(initPos, 1L),
                 getNext = { node -> getNext(node, matrix) }
             )

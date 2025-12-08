@@ -7,7 +7,7 @@ import java.util.Queue
  * обход дерева в ширину
  * возвращает все пройденные вершины и количество раз, сколько их посетили
  * */
-fun bfsVisitTree(
+fun bfsCountVisitTree(
     initNode: BFSTreeNode,
     getNext: (BFSTreeNode) -> List<BFSTreeNode>,
     onVisit: (BFSTreeNode) -> Unit = {},
@@ -55,3 +55,30 @@ class BFSTreeNode(val pos: Point2D, val count: Long) {
     }
 
 }
+
+
+fun <T>bfsSimpleVisitTree(
+    initNode: T,
+    getNext: (T) -> List<T>,
+    onVisit: (T) -> Unit = {},
+): Set<T> {
+    val queue: Queue<T> = LinkedList()
+    queue.add(initNode)
+    val visited = mutableSetOf<T>()
+    while (queue.isNotEmpty()) {
+        var point = queue.poll()
+        val nexts = mutableListOf<T>()
+        while (point != null) {
+            if (!visited.contains(point)) {
+                onVisit(point)
+                visited.add(point)
+                nexts.addAll(getNext(point))
+            }
+
+            point = queue.poll()
+        }
+        queue.addAll(nexts)
+    }
+    return visited
+}
+
