@@ -77,7 +77,7 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
         val xDiff = p.x - x
         val yDiff = p.y - y
         if (xDiff > 0) list.add(abs(xDiff) to RIGHT) else if (xDiff < 0) list.add(abs(xDiff) to LEFT)
-        if (yDiff > 0) list.add(abs(yDiff) to UP) else if (yDiff < 0) list.add(abs(yDiff) to DOWN)
+        if (yDiff > 0) list.add(abs(yDiff) to DOWN) else if (yDiff < 0) list.add(abs(yDiff) to UP)
         return list
     }
 }

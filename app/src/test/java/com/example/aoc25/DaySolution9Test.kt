@@ -37,18 +37,46 @@ class DaySolution9Test {
     }
 
     @Test
+    fun testPart2test2() {
+        //test case
+        val solution = DaySolution9(TestLogger())
+        test_input9_3.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
+        solution.part2.finish()
+        assertEquals(result2, solution.part2.obtainResult())
+    }
+
+    @Test
     fun testPart2() {
         // check
-        val solution = DaySolution9(NoLogger())
+        val solution = DaySolution9(TestLogger(), start = 0, step = 1000)
         input9_2.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
         solution.part2.finish()
         assertEquals(null, solution.part2.obtainResult())
     }
 
     private val test_input9_1 =
-        """""".trimIndent().split("\n")
-    private val result1 = "11"
+
+        """7,1
+11,1
+11,7
+9,7
+9,5
+2,5
+2,3
+7,3""".trimIndent().split("\n")
+    private val result1 = "50"
 
     private val test_input9_2 = test_input9_1
-    private val result2 = "31"
+    private val result2 = "26"
+
+    private val test_input9_3 =
+
+        """0,0
+0,9
+9,9
+9,5
+0,5
+0,4
+9,4
+9,0""".trimIndent().split("\n")
 }
