@@ -2,7 +2,7 @@ package com.example.aoc25.util
 
 import com.example.ILogger
 
-class Matrix<T>() : Iterable<PositionData<T>> {
+open class Matrix<T>() : Iterable<PositionData<T>> {
     private val data = mutableMapOf<Point2D, T>()
 
     fun copy(): Matrix<T>{

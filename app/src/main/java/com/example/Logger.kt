@@ -10,3 +10,9 @@ class Logger(private val tag: String) : ILogger {
         Log.d(tag, str)
     }
 }
+
+class SystemLogger() : ILogger {
+    override fun logD(str: String) {
+        println(str)
+    }
+}
