@@ -60,17 +60,22 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
             }
         }
     }
+
     fun <T> inMatrix(matrix: Matrix<T>): Boolean = matrix.pointInRange(this)
     fun <T> inMatrixVal(matrix: Matrix<T>, value: T): Boolean = matrix.pointInRange(this)
             && matrix.get(this) == value
+
+    fun <T> inMatrixCondition(matrix: Matrix<T>, cond: (T) -> Boolean): Boolean =
+        matrix.pointInRange(this)
+                && cond(matrix.get(this))
 
     fun inRange(xR: IntRange, yR: IntRange) =
         x in xR && y in yR
 
     fun maxAbs() = maxOf(abs(x), abs(y))
 
-    fun distanceTo(p:Point2D):Int =
-        abs(p.x-x) +abs(p.y-y)
+    fun distanceTo(p: Point2D): Int =
+        abs(p.x - x) + abs(p.y - y)
 
     fun vectorTo(p: Point2D): List<Pair<Int, Direction>> {
         val list = mutableListOf<Pair<Int, Direction>>()

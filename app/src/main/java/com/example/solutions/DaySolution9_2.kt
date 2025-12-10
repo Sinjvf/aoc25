@@ -47,9 +47,9 @@ class DaySolution9_2(private val logger: ILogger, val start: Int = 0, val step: 
         }
 
         override fun finish() {
-            matrix = PolygonMatrix(points.maxBy { it.x }.x + 1, points.maxBy { it.y }.y + 1)
+      /*      matrix = PolygonMatrix(points.maxBy { it.x }.x + 1, points.maxBy { it.y }.y + 1)
             matrix.fillPolygonPoints(points)
-            matrix.print(logger)
+            matrix.print(logger)*/
 
         }
 
