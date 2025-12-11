@@ -9,71 +9,24 @@ import java.util.PriorityQueue
 interface Graph<Node, Data : GraphData> {
     fun next(data: NodesWithData<Node, Data>): List<NodesWithData<Node, Data>>
 
-    fun nextExclude(data: NodesWithData<Node, Data>, exclude: Set<Node>): List<NodesWithData<Node, Data>> =
+    fun nextExclude(
+        data: NodesWithData<Node, Data>,
+        exclude: Set<Node>
+    ): List<NodesWithData<Node, Data>> =
         next(data)
             .filter { it.node !in exclude }
 }
 
+abstract class SimpleGraph<Node> : Graph<Node, EmptyGraphData> {
+    abstract fun next(node: Node): List<Node>
+    override fun next(data: NodesWithData<Node, EmptyGraphData>): List<NodesWithData<Node, EmptyGraphData>> {
+        return next(data.node).map { NodesWithData(data.node, it, EmptyGraphData) }
+    }
+}
 
 interface GraphData {
     fun plus(a: GraphData): GraphData
     fun getLong(): Long
-}
-fun <Node, Data : GraphData> Graph<Node, Data>.searchLoop(
-    startNode: Node,
-    startData: Data,
-    nextF: ((data: NodesWithData<Node, Data>) -> List<NodesWithData<Node, Data>>)? = null
-): List<List<Pair<Node, Node>>> {
-
-    val visitedR= mutableListOf<Pair<Node, Node>>()
-
-    return searchLoop_(startNode, startData, startNode, visitedR)
-}
-
-private fun <Node, Data : GraphData> Graph<Node, Data>.searchLoop_(
-    startNode: Node,
-    startData: Data,
-    endNode: Node,
-    visitedR: List<Pair<Node, Node>> ,
-    nextF: ((data: NodesWithData<Node, Data>) -> List<NodesWithData<Node, Data>>)? = null
-): List<List<Pair<Node, Node>>> {
-
-    val currData = NodesWithData(
-        null,
-        startNode,
-        startData,
-    )
-
-    //TODO
-    if (visitedR.size >3) return emptyList()
-
-    if (currData.node == endNode && visitedR.isNotEmpty()) {
-        return listOf(visitedR)
-    }
-    val nexts = nextF?.invoke(currData) ?: next(currData).filter {
-        !visitedR.contains(it.node to currData.node) && !visitedR.contains(currData.node to it.node)
-    }
-    if (nexts.isEmpty())return listOf(visitedR)
-   // println("${nexts.size}   ${visitedR.size}")
-    val res =  mutableListOf<List<Pair<Node, Node>>>()
-
-
-    nexts.forEach { nextData ->
-//println("visit ${currData.node to nextData.node} $visitedR")
-        val newData = currData.data.plus(nextData.data) as Data
-      //  visitedR.add(currData.node to nextData.node)
-        val ppp = searchLoop_(
-            nextData.node,
-            newData,
-            endNode,
-            buildList{addAll(visitedR); add(currData.node to nextData.node)}
-            )
-        if (ppp.isNotEmpty()) {
-            res.addAll(ppp)
-        }
-    }
-
-    return res
 }
 
 fun <Node, Data : GraphData> Graph<Node, Data>.search(
@@ -81,7 +34,7 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
     startData: Data,
     isFinish: (NodesWithData<Node, Data>) -> Boolean,
     onVisited: (NodesWithData<Node, Data>) -> Unit = { _ -> },
-    heuristic: (NodesWithData<Node, Data>)  -> Data? = { null },
+    heuristic: (NodesWithData<Node, Data>) -> Data? = { null },
     isFFFinish: (NodesWithData<Node, Data>, Map<Node, Pair<Node, Data>>, PriorityQueue<NodesWithData<Node, Data>>) -> Boolean = { _, _, _ -> false },
     clear: (Node) -> Unit = {},
     // переопределение получения списка next. Хз, зачем
@@ -100,18 +53,22 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
             currData.node,
             searchTree
         )
-val nexts = nextF?.invoke(currData) ?: next(currData)
+        val nexts = nextF?.invoke(currData) ?: next(currData)
 //println( "     current ${currData.node}, next =${nexts.map{it.node}}")
         nexts
             .filter { it.node !in searchTree }
             .forEach { nextData ->
                 val newData = currData.data.plus(nextData.data) as Data
-                if (newData.getLong() <= (searchTree[nextData.node]?.second?.getLong() ?: Long.MAX_VALUE)) {
+                if (newData.getLong() <= (searchTree[nextData.node]?.second?.getLong()
+                        ?: Long.MAX_VALUE)
+                ) {
                     val middleData = NodesWithData(
                         currData.node,
                         nextData.node,
-                        newData)
-                    val dataWithHeu: Data = (heuristic(middleData)?.let { it.plus(newData) as Data }) ?: newData
+                        newData
+                    )
+                    val dataWithHeu: Data =
+                        (heuristic(middleData)?.let { it.plus(newData) as Data }) ?: newData
                     queue.add(
                         NodesWithData(
                             currData.node,
@@ -122,58 +79,6 @@ val nexts = nextF?.invoke(currData) ?: next(currData)
                     searchTree[nextData.node] = currData.node.apply { clear(this) } to newData
                 }
             }
-    }
-}
-
-fun <Node, Data : GraphData> Graph<Node, Data>.findAll(
-    startNode: Node,
-    startData: Data,
-    end: Node,
-): List<SearchResult<Node, Data>>  = buildList{
-    val search1Res = search(
-        startNode = startNode,
-        startData = startData,
-        isFinish = { nodesWithData -> nodesWithData.node == end },
-    )
-    val search1 = search1Res.reversedPathTo(end)
-    val cost = search1?.cost?.getLong()?:return emptyList()
-
-    val path = search1.path
-    add(search1Res)
-
-  //  println("findAll path = $path")
-    path.forEach {
-        addAll(findAnother(startNode, startData, end, search1.cost.getLong(), setOf(it)))
-    }
-}
-
-fun <Node, Data : GraphData> Graph<Node, Data>.findAnother(
-    startNode: Node,
-    startData: Data,
-    end: Node,
-    cost: Long,
-    exclude: Set<Node>
-): List<SearchResult<Node, Data>> {
-    if (exclude.contains(startNode) || exclude.contains(end)) return emptyList()
-
-    val itSearchRes = search(
-        startNode = startNode,
-        startData = startData,
-        isFinish = { nodesWithData -> nodesWithData.node == end },
-        nextF = {nextExclude(it, exclude)}
-    )
-    val itSearch = itSearchRes.reversedPathTo(end)
-    return buildList {
-     //   println("findAnother exclude= $exclude  = $itSearch")
-        if (itSearch?.cost?.getLong() == cost) {
-            add(itSearchRes)
-           /// println("findAnother exclude= $exclude  = $itSearchRes")
-            itSearch.path.forEach {
-                addAll(
-                    findAnother(startNode, startData, end, cost, buildSet { addAll(exclude);add(it) })
-                )
-            }
-        }
     }
 }
 
@@ -216,30 +121,6 @@ data class SearchResult<Node, Data : GraphData>(
     val searchTree: Map<Node, Pair<Node, Data>>,
 )
 
-// возвращает "был ли он прерван"
-fun <Node, Data : GraphData> Graph<Node, Data>.fullPath(
-    startNode: Node,
-    startData: Data,
-    isFinish: (NodesWithData<Node, Data>) -> Boolean,
-    onVisited: (NodesWithData<Node, Data>) -> Unit = { _ -> }
-): Boolean {
-    val queue =/* PriorityQueue(compareBy<Pair<Node, Data>> { it.second.getLong() })*/
-        LinkedList<NodesWithData<Node, Data>>()
-    queue.add(NodesWithData(null, startNode, startData))
-
-    while (true) {
-        val nodesWithData = queue.poll() ?: return false
-        onVisited(nodesWithData)
-
-        if (isFinish(nodesWithData)) return true
-
-        next(nodesWithData)
-            .forEach { newNData ->
-                val newData = nodesWithData.data.plus(newNData.data) as Data
-                queue.add(NodesWithData(nodesWithData.node, newNData.node, newData))
-            }
-    }
-}
 
 open class NodesWithData<Node, Data : GraphData>(
     open val prev: Node?,
@@ -251,28 +132,82 @@ open class NodesWithData<Node, Data : GraphData>(
     }
 }
 
+interface Condition<Node> {
+    fun condition(node: Node): Boolean
+}
+
+fun <Node> List<Pair<Condition<Node>, Boolean>>.conditionsKey() =
+    map { it.second }.joinToString(separator = "")
+
+fun <Node> List<Pair<Condition<Node>, Boolean>>.check() =
+    isEmpty() || all { it.second }
+
+fun <Node> List<Pair<Condition<Node>, Boolean>>.compute(node: Node) =
+    map { it.first to (it.second || it.first.condition(node)) }
+
+
+fun <Node> SimpleGraph<Node>.countAll(
+    start: Node,
+    end: Node,
+    // условия при которых путь засчитывается (должны быть выполнены все)
+    // в списке задается интерфейс вычисления условия и текущее вычисленное значение
+    conditions: List<Pair<Condition<Node>, Boolean>>,
+    cache: MutableMap<String, Long>
+): Long {
+    val key = "$start${conditions.conditionsKey()}"
+    if (cache.containsKey(key)) {
+        return cache[key]!!
+    }
+
+    if (start == end) {
+        if (conditions.check()) {
+            return 1
+        }
+        return 0
+    }
+
+    var result: Long = 0
+    for (to in next(start)) {
+        result += countAll(to, end, conditions.compute(to), cache)
+    }
+
+    cache[key] = result
+    return result
+}
+
+
 // возвращает все найденные пути(nолько количество)
+// ПОЛНЫЙ ОБХОД!!!!
 fun <Node, Data : GraphData> Graph<Node, Data>.allPath(
     startNode: Node,
     startData: Data,
-    isEndNode: (Node)->Boolean
-): List<Node > {
-    val paths = mutableListOf<List<Node>>()
+    isEndNode: (Node) -> Boolean,
+    exclude: (Node) -> Boolean = { false }
+): List<Node> {
     val queue = PriorityQueue(compareBy<NodesWithDataAndPath<Node, Data>> { it.data.getLong() })
-    queue.add(NodesWithDataAndPath(null, startNode, startData, paths))
+    queue.add(NodesWithDataAndPath(null, startNode, startData, listOf()))
     val result = mutableListOf<Node>()
 
     while (true) {
         val nodesData = queue.poll() ?: return result
-        if (isEndNode(nodesData.node)){
-            result.add(startNode)
-        }
+        when {
+            exclude(nodesData.node) -> continue
+            isEndNode(nodesData.node) -> result.add(startNode)
 
-        next(nodesData)
-            .forEach { newNData ->
-                val newData = nodesData.data.plus(newNData.data) as Data
-                queue.add(NodesWithDataAndPath(nodesData.node, newNData.node, newData, listOf()))
-            }
+            else ->
+                next(nodesData)
+                    .forEach { newNData ->
+                        val newData = nodesData.data.plus(newNData.data) as Data
+                        queue.add(
+                            NodesWithDataAndPath(
+                                nodesData.node,
+                                newNData.node,
+                                newData,
+                                listOf()
+                            )
+                        )
+                    }
+        }
     }
 }
 
@@ -281,15 +216,28 @@ class NodesWithDataAndPath<Node, Data : GraphData>(
     override val node: Node,
     override val data: Data,
     val paths: List<List<Node>>
-):NodesWithData<Node, Data>(prev, node, data) {
+) : NodesWithData<Node, Data>(prev, node, data) {
     override fun toString(): String {
         return /*"prev = $prev,*/ "node = $node, data = $data"
     }
 }
 
+object EmptyGraphData : GraphData {
+    override fun plus(a: GraphData): GraphData {
+        if (a !is EmptyGraphData) throw IllegalArgumentException("expext EmptyGraphData class")
+        return EmptyGraphData
+    }
+
+    override fun getLong(): Long = 0
+
+    override fun toString(): String {
+        return ""
+    }
+}
+
 class LongGraphData(val i: Long) : GraphData {
     override fun plus(a: GraphData): GraphData {
-        if (a !is LongGraphData) throw IllegalArgumentException("expext IntGraphData class")
+        if (a !is LongGraphData) throw IllegalArgumentException("expext LongGraphData class")
         return LongGraphData(i + a.i)
     }
 
@@ -302,7 +250,7 @@ class LongGraphData(val i: Long) : GraphData {
 
 class StringGraphData(val i: String) : GraphData {
     override fun plus(a: GraphData): GraphData {
-        if (a !is StringGraphData) throw IllegalArgumentException("expext IntGraphData class")
+        if (a !is StringGraphData) throw IllegalArgumentException("expext StringGraphData class")
 
         return StringGraphData("$i${a.i}")
     }
